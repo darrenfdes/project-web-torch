@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/home/darren/Desktop/web-app-torch/env/bin/python3",
+    "python.formatting.provider": "black"
+}
