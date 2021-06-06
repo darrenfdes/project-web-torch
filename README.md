@@ -4,10 +4,11 @@ Uses pretrained torch models in static folder for real time image to image trans
 Input images should be a brain CT scan and in "png" format
 
 instructions
-pip install -r requirements.txt
-python app.py
+create virtual env int directory (optional) and activate
+1.pip install -r requirements.txt
+2.python app.py
 
 To run with wasgi in dev
 activate env
-uswgi dev.ini
-application will run on http://localhost:9090/
+1.uswgi dev.ini
+2.application will run on http://localhost:9090/
