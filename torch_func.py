@@ -114,4 +114,3 @@ class GeneratorResNet(nn.Module):
         return self.model(x)
 
 
-print("torch_func.py completed!")
