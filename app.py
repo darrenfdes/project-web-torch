@@ -71,7 +71,7 @@ G_AB = GeneratorResNet(input_shape, n_residual_blocks)
 G_AB.load_state_dict(torch.load("static/models/saved_models/G_AB.pth"))
 G_AB.eval()
 
-print("here in app.py")
+
 
 # default access page
 @app.route("/")
