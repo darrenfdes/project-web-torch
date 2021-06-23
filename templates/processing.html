@@ -38,9 +38,9 @@
             <div class="col-lg-6">
                 <h4>Show</h4>
                 <form id="form-flip" action="{{ url_for('flip') }}" method="POST" enctype="multipart/form-data">        
-                  <button id="btnFlipV" class="btn btn-lg btn-success" type="submit" name="mode" value="vertical">mri</button>
-                  <button id="btnFlipH" class="btn btn-lg btn-success" type="submit" name="mode" value="horizontal">plot</button>
-                  <!-- <button id="btnFlipH" class="btn btn-lg btn-success" type="submit" name="mode" value="both">reconstruction</button> -->
+                  <button id="btnFlipV" class="btn btn-lg btn-success" type="submit" name="mode" value="vertical">MRI->CT</button>
+                  <button id="btnFlipH" class="btn btn-lg btn-success" type="submit" name="mode" value="horizontal">CT->MRI</button>
+                  
                   
 			  <input type="text" class="hidden" name="image" value="{{ image_name }}">  
                
