@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, send_from_directory, redirect
 import os
 from PIL import Image
 from numpy.random import randint
-from matplotlib import pyplot
 import io
 import numpy as np
 from os import listdir
@@ -71,6 +70,13 @@ G_AB = GeneratorResNet(input_shape, n_residual_blocks)
 G_AB.load_state_dict(torch.load("static/models/saved_models/G_AB.pth"))
 G_AB.eval()
 
+# G_BA = GeneratorResNet(input_shape, n_residual_blocks)
+# # if cuda:
+# #     G_AB = G_AB.cuda()
+
+# G_BA.load_state_dict(torch.load("static/models/saved_models/G_BA.pth"))
+# G_BA.eval()
+
 
 
 # default access page
@@ -121,6 +127,8 @@ def flip():
         mode = "horizontal"
     elif "vertical" in request.form["mode"]:
         mode = "vertical"
+    elif "reconstruction" in request.form["mode"]:
+        mode = "reconstruction"
     elif "both" in request.form["mode"]:
         mode = "both"
     else:
@@ -134,10 +142,17 @@ def flip():
     img = Image.open(destination)
     # data = load_image(destination)
     if mode == "vertical":
-        real_A = image_loader(data_transforms, destination).type(Tensor)
-        fake_B = G_AB(real_A)
-        fake_B = make_grid(fake_B, nrow=1, normalize=True)
-        img = transforms.ToPILImage()(np.squeeze(fake_B))
+        # rename all A to B other than G_BA
+        G_BA = GeneratorResNet(input_shape, n_residual_blocks)
+        G_BA.load_state_dict(torch.load("static/models/saved_models/G_BA.pth"))
+        G_BA.eval()
+        real_B = image_loader(data_transforms, destination).type(Tensor)
+        fake_A = G_BA(real_B)
+        fake_A = make_grid(fake_A, nrow=1, normalize=True)
+        real_B = make_grid(real_B, nrow=1, normalize=True)
+        image_grid = torch.cat((real_B, fake_A), -1)
+        save_image(image_grid, f"static/images/plot2.png", normalize=False)
+        img = Image.open("static/images/plot2.png")
 
         # cust = {"InstanceNormalization": InstanceNormalization}
         # model_AtoB = load_model("static/models/g_model_AtoB_018060.h5", cust)
@@ -163,11 +178,24 @@ def flip():
         # B_generated = model_AtoB.predict(A_real)
         # show_plot2(A_real, B_generated)
         # img = Image.open("static/images/plot2.png")
+
+    elif mode == "reconstruction":
+        G_BA = GeneratorResNet(input_shape, n_residual_blocks)
+        G_BA.load_state_dict(torch.load("static/models/saved_models/G_BA.pth"))
+        G_BA.eval()
+        real_A = image_loader(data_transforms, destination).type(Tensor)
+        fake_B = G_AB(real_A)
+        reel_A = G_BA(fake_B)
+        real_A = make_grid(reel_A, nrow=1, normalize=True)
+        fake_B = make_grid(fake_B, nrow=1, normalize=True)
+        reel_A = make_grid(reel_A, nrow=1, normalize=True)
+        image_grid = torch.cat((real_A, fake_B, reel_A), -1)
+        save_image(image_grid, f"static/images/plot3.png", normalize=False)
+        img = Image.open("static/images/plot3.png")
+
     else:
         return (
-            render_template(
-                "error.html", message="Mode not supported (vertical - horizontal)"
-            ),
+            render_template("error.html", message="Mode not supported :("),
             400,
         )
         filename = request.form["image"]
